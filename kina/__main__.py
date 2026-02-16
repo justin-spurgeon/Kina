@@ -7,9 +7,7 @@ import random
 
 DEFAULT_ITERATIONS = 10
 MAX_ITERATIONS = 20
-DEFAULT_WIDTH = 80
-DEFAULT_HEIGHT = 24
-
+MAX_WIDTH = 100
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -23,11 +21,19 @@ def main() -> None:
         help=f"L-system expansion iterations (default {DEFAULT_ITERATIONS}, max {MAX_ITERATIONS})",
     )
 
+    parser.add_argument(
+        "--width",
+        "-w",
+        type=int,
+        default=MAX_WIDTH,
+        help=f"Maximum width of the output (default {MAX_WIDTH})",
+    )
+
     args = parser.parse_args()
 
     iterations = max(0, min(args.iterations, MAX_ITERATIONS))
 
-    axiom = "haab"
+    axiom = "haabkj"
     productions = {
         "a": "aaab",
         "b": "cfjaf",
@@ -46,22 +52,28 @@ def main() -> None:
         "a": "⢚",
         "b": "⣲",
         "c": "⢖",
-        "d": "⢭",
+        "d": "⢭\n",
         "e": "⢈",
         "f": "⢀",
         "g": "⡎",
-        "h": "⡁",
+        "h": "⡁\n",
         "i": "▍ ",
-        "j": "▔\n",
-        "k": "⣀ ",
+        "j": ".",
+        "k": "⣀ :\t",
     }
 
     output = ""
+    width = 0
 
     for i in range(iterations):
         axiom = "".join(productions.get(c, c) for c in axiom)
         for c in axiom:
-            output += symbols.get(c, c)
+            symbol = symbols.get(c, c)
+            width += len(symbol)
+            if width > args.width:
+                output += "\n\t"
+                width = 0
+            output += symbol
 
     print(output)
 
